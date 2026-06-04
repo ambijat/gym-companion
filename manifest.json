@@ -1,0 +1,68 @@
+{
+  "name": "DS4 Gym Companion",
+  "short_name": "GymComp",
+  "description": "L4/L5 safe gym workout companion — Wed/Thu/Fri/Sat sessions",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0c0e0d",
+  "background_color": "#0c0e0d",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Wednesday — Chest & Triceps",
+      "short_name": "Wed",
+      "url": "/?day=wed",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Thursday — Spinning & Shoulders",
+      "short_name": "Thu",
+      "url": "/?day=thu",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Friday — Back & Biceps",
+      "short_name": "Fri",
+      "url": "/?day=fri",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Saturday — Legs",
+      "short_name": "Sat",
+      "url": "/?day=sat",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/screen-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Gym Companion session view"
+    },
+    {
+      "src": "screenshots/screen-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Gym Companion on mobile"
+    }
+  ],
+  "protocol_handlers": []
+}

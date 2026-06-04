@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>DS4 · Gym Companion</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c0e0d">
+<meta name="description" content="L4/L5 safe gym workout companion — Wed/Thu/Fri/Sat sessions">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0e0d;
+    --bg2:#151816;
+    --panel:#151917;
+    --panel2:#1c211e;
+    --line:#2a302c;
+    --ink:#f2f5f1;
+    --mut:#838b84;
+    --mut2:#5d645e;
+    --go:#c4ff1f;
+    --go-deep:#2a3a05;
+    --safe:#37d68a;
+    --modify:#46c2ff;
+    --caution:#ff5b50;
+    --radius:18px;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);}
+  body{
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    background:
+      radial-gradient(120% 60% at 50% -10%, #1a221c 0%, rgba(26,34,28,0) 55%),
+      radial-gradient(90% 50% at 100% 100%, #14180f 0%, rgba(20,24,15,0) 60%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:480px;margin:0 auto;padding:14px 14px 40px;}
+
+  /* header */
+  .top{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px;}
+  .brand{display:flex;flex-direction:column;line-height:1;}
+  .brand .kicker{font-size:.62rem;letter-spacing:.32em;color:var(--mut);font-weight:700;text-transform:uppercase;}
+  .brand .date{font-family:'Bebas Neue',sans-serif;font-size:2.05rem;letter-spacing:.02em;color:var(--ink);margin-top:3px;}
+  .brand .sub{font-size:.72rem;color:var(--mut);margin-top:1px;font-weight:600;}
+  .seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px;}
+  .seg button{
+    font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.06em;
+    background:none;border:none;color:var(--mut);padding:6px 14px;border-radius:999px;cursor:pointer;transition:.18s;
+  }
+  .seg button.on{background:var(--go);color:#10140a;}
+
+  /* day chips */
+  .days{display:flex;gap:7px;margin-bottom:14px;}
+  .day{
+    flex:1;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:13px;
+    padding:9px 0 8px;cursor:pointer;transition:.16s;
+  }
+  .day .dn{font-family:'Bebas Neue',sans-serif;font-size:1.32rem;letter-spacing:.04em;color:var(--ink);line-height:1;}
+  .day .df{font-size:.56rem;letter-spacing:.16em;color:var(--mut2);text-transform:uppercase;font-weight:700;margin-top:3px;}
+  .day.on{background:linear-gradient(180deg,#23291f,#1a1f17);border-color:var(--go);}
+  .day.on .dn{color:var(--go);}
+  .day.on .df{color:var(--go);}
+
+  /* safety strip */
+  .stop{
+    display:flex;align-items:center;gap:9px;background:rgba(255,91,80,.09);
+    border:1px solid rgba(255,91,80,.32);border-radius:13px;padding:10px 12px;margin-bottom:14px;cursor:pointer;
+  }
+  .stop .dot{width:9px;height:9px;border-radius:50%;background:var(--caution);box-shadow:0 0 12px var(--caution);flex:none;animation:pulse 2.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .stop .txt{font-size:.74rem;font-weight:700;color:#ffb3ad;letter-spacing:.01em;}
+  .stop .more{font-size:.66rem;color:#ff8c83;margin-left:auto;font-weight:700;}
+  .stop-detail{display:none;font-size:.76rem;line-height:1.5;color:#ffc3bd;border:1px solid rgba(255,91,80,.3);
+    border-top:none;border-radius:0 0 13px 13px;margin:-14px 0 14px;padding:11px 13px;background:rgba(255,91,80,.05);}
+  .stop-detail.show{display:block;}
+  .stop-detail b{color:#ff7066;}
+
+  /* progress */
+  .prog{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .bar{flex:1;height:7px;background:var(--panel2);border-radius:999px;overflow:hidden;}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--safe),var(--go));border-radius:999px;transition:width .45s cubic-bezier(.4,1.3,.5,1);}
+  .prog .pct{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--mut);letter-spacing:.05em;min-width:54px;text-align:right;}
+  .reset{font-size:.62rem;font-weight:800;letter-spacing:.1em;color:var(--mut2);background:none;border:1px solid var(--line);
+    border-radius:8px;padding:6px 9px;cursor:pointer;text-transform:uppercase;transition:.16s;}
+  .reset.armed{color:var(--caution);border-color:var(--caution);}
+
+  /* hero up-next */
+  .hero{
+    background:linear-gradient(165deg,#1d2319 0%,#161a14 60%);
+    border:1px solid #313a2a;border-radius:var(--radius);padding:18px 18px 16px;margin-bottom:18px;position:relative;overflow:hidden;
+    box-shadow:0 18px 40px -22px rgba(196,255,31,.4);
+  }
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 50% at 90% 0%,rgba(196,255,31,.14),transparent 60%);pointer-events:none;}
+  .hero .lbl{font-size:.64rem;letter-spacing:.34em;font-weight:800;color:var(--go);text-transform:uppercase;display:flex;align-items:center;gap:7px;}
+  .hero .lbl::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(196,255,31,.4),transparent);}
+  .hero .name{font-family:'Bebas Neue',sans-serif;font-size:2.7rem;line-height:.98;letter-spacing:.01em;margin:9px 0 2px;color:#fff;}
+  .hero .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  .hero .reps{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.05em;color:var(--go);}
+  .hero .cue{font-size:.8rem;color:#cfd6cb;font-weight:600;line-height:1.35;margin-top:9px;display:flex;gap:7px;align-items:flex-start;}
+  .hero .cue svg{flex:none;margin-top:2px;}
+  .hero .howto{font-size:.82rem;color:#aeb4ac;line-height:1.5;margin-top:11px;padding-top:11px;border-top:1px solid #2a3326;}
+  a.vlink{display:inline-block;margin-top:9px;color:#10140a;background:var(--go);font-weight:800;font-size:.8rem;padding:8px 13px;border-radius:9px;text-decoration:none;letter-spacing:.01em;}
+  a.vlink:active{background:#b6ef10;}
+  .vurl{display:inline-block;margin-top:8px;font-size:.72rem;color:#8b918c;word-break:break-all;user-select:all;-webkit-user-select:all;}
+  .vidblock{margin-top:11px;}
+  .vlbl{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#5d645e;font-weight:800;margin-bottom:6px;}
+  .vrow{margin-bottom:7px;}
+  a.vmini{display:inline-block;color:#10140a;background:var(--go);font-weight:800;font-size:.72rem;padding:5px 10px;border-radius:8px;text-decoration:none;margin-right:6px;}
+  .badge{font-size:.58rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;padding:4px 8px;border-radius:6px;}
+  .b-safe{background:rgba(55,214,138,.16);color:var(--safe);}
+  .b-modify{background:rgba(70,194,255,.15);color:var(--modify);}
+  .b-caution{background:rgba(255,91,80,.16);color:var(--caution);}
+  .b-cardio{background:rgba(255,255,255,.08);color:var(--mut);}
+
+  .wt{display:flex;align-items:center;gap:8px;margin-top:14px;}
+  .wt label{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:800;}
+  .wt input{flex:1;background:#11150f;border:1px solid var(--line);border-radius:10px;color:var(--ink);
+    padding:9px 11px;font-family:'Hanken Grotesk';font-size:.92rem;font-weight:600;outline:none;}
+  .wt input::placeholder{color:var(--mut2);}
+  .wt input:focus{border-color:var(--go);}
+
+  .done-btn{
+    width:100%;margin-top:15px;background:var(--go);color:#10140a;border:none;border-radius:13px;
+    font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.08em;padding:13px;cursor:pointer;transition:.12s;
+  }
+  .done-btn:active{transform:scale(.975);background:#b6ef10;}
+
+  .hero.complete{text-align:center;background:linear-gradient(165deg,#1a261c,#141a14);border-color:var(--safe);box-shadow:0 18px 40px -22px rgba(55,214,138,.5);}
+  .hero.complete .big{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:var(--safe);letter-spacing:.04em;line-height:1;}
+  .hero.complete p{color:#bfe9d2;font-size:.85rem;margin:8px 0 0;font-weight:600;}
+
+  /* list */
+  .lsthead{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--mut2);font-weight:800;margin:0 4px 9px;}
+  .row{
+    display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:13px;
+    padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:.16s;animation:rise .4s both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .row.next{border-color:var(--go);background:linear-gradient(180deg,#1c2218,var(--panel));}
+  .row.done{opacity:.42;}
+  .row.done .rn{text-decoration:line-through;text-decoration-color:var(--mut2);}
+  .check{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;transition:.16s;}
+  .row.next .check{border-color:var(--go);}
+  .row.done .check{background:var(--safe);border-color:var(--safe);}
+  .check svg{opacity:0;transition:.16s;}
+  .row.done .check svg{opacity:1;}
+  .rbody{flex:1;min-width:0;}
+  .rn{font-family:'Bebas Neue',sans-serif;font-size:1.32rem;letter-spacing:.03em;line-height:1;color:var(--ink);}
+  .rmeta{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;}
+  .rreps{font-size:.74rem;color:var(--mut);font-weight:700;}
+  .rcue{font-size:.7rem;color:var(--mut);font-weight:500;}
+  .tag{width:8px;height:8px;border-radius:50%;flex:none;}
+  .t-safe{background:var(--safe);}.t-modify{background:var(--modify);}.t-caution{background:var(--caution);}.t-cardio{background:var(--mut2);}
+  .rowwrap{margin-bottom:8px;}
+  .row.open{border-bottom-left-radius:0;border-bottom-right-radius:0;border-color:#3a4436;margin-bottom:0;}
+  .info{flex:none;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    color:var(--mut);font-size:.92rem;font-weight:800;border:1px solid var(--line);transition:.16s;}
+  .row.open .info{color:var(--go);border-color:var(--go);}
+  .rdetail{font-size:.8rem;line-height:1.55;color:#b6bcb4;background:#11140f;border:1px solid #3a4436;border-top:none;
+    border-radius:0 0 13px 13px;padding:11px 14px 13px;animation:rise .25s both;}
+
+  .foot{text-align:center;color:var(--mut2);font-size:.66rem;margin-top:18px;line-height:1.6;}
+  .legend{display:flex;justify-content:center;gap:14px;margin-top:10px;font-size:.62rem;color:var(--mut);font-weight:700;}
+  .legend span{display:flex;align-items:center;gap:5px;}
+  .legend i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .tcard{background:linear-gradient(165deg,#171c16,#12150f);border:1px solid #2a3226;border-radius:18px;padding:15px 16px;margin-bottom:18px;}
+  .tcard-top{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .tk{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--mut);font-weight:800;}
+  .twhat{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.02em;color:var(--ink);line-height:1.05;margin-top:3px;max-width:180px;}
+  .tdisplay{font-family:'Bebas Neue',sans-serif;font-size:3.1rem;line-height:.9;letter-spacing:.04em;color:var(--go);font-variant-numeric:tabular-nums;}
+  .tdisplay.done{animation:tflash .5s steps(1) infinite;}
+  @keyframes tflash{0%{color:var(--caution)}50%{color:#fff}}
+  .tchips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;}
+  .tchip{background:var(--panel2);border:1px solid var(--line);color:var(--mut);font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.04em;padding:6px 12px;border-radius:9px;cursor:pointer;transition:.14s;}
+  .tchip:active{transform:scale(.95);}
+  .tchip.ctx{background:rgba(196,255,31,.12);border-color:var(--go);color:var(--go);}
+  .tbtns{display:flex;gap:9px;margin-top:13px;}
+  .tgo{flex:1;background:var(--go);color:#10140a;border:none;border-radius:11px;font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.08em;padding:11px;cursor:pointer;transition:.12s;}
+  .tgo:active{transform:scale(.98);background:#b6ef10;}
+  .treset2{background:none;border:1px solid var(--line);color:var(--mut);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em;padding:11px 18px;border-radius:11px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="kicker">DS4 · L4/L5 Safe</div>
+      <div class="date" id="dayName">–</div>
+      <div class="sub" id="sessionTitle">–</div>
+    </div>
+    <div class="seg">
+      <button id="amBtn" class="on">AM</button>
+      <button id="pmBtn">PM</button>
+    </div>
+  </div>
+
+  <div class="days" id="dayChips"></div>
+
+  <div class="stop" id="stopBar">
+    <span class="dot"></span>
+    <span class="txt">STOP if pain radiates to the leg</span>
+    <span class="more" id="stopMore">red flags ▾</span>
+  </div>
+  <div class="stop-detail" id="stopDetail">
+    <b>Stop immediately &amp; do not continue if you get:</b> leg pain or numbness · sciatica · loss of bladder control · severe back pain.<br><br>
+    Keep the spine <b>neutral</b> always · brace core before every lift · avoid flexion under load · light weight / high reps (12–15) · no heavy 1–5 rep maxes · stretch with an extension bias.
+  </div>
+
+  <div class="prog">
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="pct" id="pctTxt">0/0</div>
+    <button class="reset" id="resetBtn">Reset</button>
+  </div>
+
+  <div id="hero"></div>
+
+  <div class="tcard">
+    <div class="tcard-top">
+      <div class="tmeta"><div class="tk">Pace Timer</div><div class="twhat" id="tWhat">–</div></div>
+      <div class="tdisplay" id="tDisplay">1:00</div>
+    </div>
+    <div class="tchips">
+      <button class="tchip" data-sec="60">1:00</button>
+      <button class="tchip" data-sec="90">1:30</button>
+      <button class="tchip" data-sec="120">2:00</button>
+      <button class="tchip" data-sec="180">3:00</button>
+      <button class="tchip" data-sec="240">4:00</button>
+      <button class="tchip ctx" id="tCtx" style="display:none"></button>
+    </div>
+    <div class="tbtns">
+      <button class="tgo" id="tToggle">Start</button>
+      <button class="treset2" id="tReset">Reset</button>
+    </div>
+  </div>
+
+  <div class="lsthead">Full Session</div>
+  <div id="list"></div>
+
+  <div class="legend">
+    <span><i class="t-safe"></i>Safe</span>
+    <span><i class="t-modify"></i>Modify form</span>
+    <span><i class="t-caution"></i>Light only</span>
+  </div>
+  <div class="foot">Tap a row to tick it off · the next move is always up top.<br>Listen to your body — when in doubt, lighten the load.</div>
+</div>
+
+<script>
+/* ---------- ds4 session data (L4/L5 SAFE — MODIFIED) ---------- */
+const MEDBALL = [
+  {n:"Around-the-Body Rotations", r:"20 each way · 4 kg", t:"medball", c:"Keep hips square and core tight",
+   d:"Hold the 4 kg ball in your palms and pass it in a circle around your waist, hand to hand — like spinning a basketball around your body. 20 rotations one direction, then 20 the other. Trains rotational control without loading the spine."},
+  {n:"Figure-8 Through Legs", r:"~30–60 sec", t:"medball", c:"Soft knees, flat back — hinge from the hips, don't round the spine",
+   d:"Stand with feet wide, knees slightly bent. Weave the ball in a figure-eight pattern in and around your legs, passing it from hand to hand. Stay low through the hips with a neutral spine — this is the part to watch for L4/L5."},
+  {n:"Plank w/ Hand on Ball", r:"30 sec / side", t:"core", c:"Don't let the hips sag or twist",
+   d:"Get into a high plank with one hand resting on top of the ball and the other flat on the floor. Hold steady, resisting any rotation, then switch hands. Excellent anti-rotation core work — exactly the kind your back likes."},
+  {n:"Overhead Slam", r:"12 reps", t:"medball", c:"Brace the core BEFORE each slam · hinge from the hips, keep the lower back neutral",
+   d:"NEW — worth learning. Hold the ball overhead with both hands, brace your abs hard, then slam it straight down to the floor in front of you, driving through your lats and abs. Catch the bounce or pick it up and reset. It's a power move; for L4/L5 the rule is hinge at the hips, never round the lower back. Start with a lighter ball until the pattern feels solid."},
+];
+const CORE = [
+  {n:"Plank", r:"3 × 30 sec", t:"core", c:"Back flat — don't let hips sag",
+   d:"Forearms and toes on the floor, body in a straight line. Squeeze glutes and brace abs; hold without letting the hips drop or pike up."},
+  {n:"Bird Dog", r:"3 × 10 / side", t:"core", c:"Slow & controlled — don't arch the back",
+   d:"On hands and knees, extend the opposite arm and leg until they're in line with the torso, hold a beat, return. Keep the spine still — no arching or twisting."},
+  {n:"Dead Bug", r:"3 × 10 / side", t:"core", c:"Press lower back into the floor",
+   d:"Lie on your back, arms up, knees bent at 90°. Lower the opposite arm and leg toward the floor while keeping your lower back pressed down, then switch."},
+  {n:"Pallof Press", r:"3 × 10 / side", t:"core", c:"Anti-rotation — resist the twist",
+   d:"Standing side-on to a cable or band at chest height, press the handle straight out in front and resist its pull to rotate you. All about bracing, not twisting."},
+];
+const COREACT = [
+  {n:"Core Activation (7-min video)", r:"~7 min · during warm-up", t:"core", c:"Follow along — keep the lower back flat & braced throughout",
+   d:"Your core activation, done as a guided follow-along during the warm-up — about 7 minutes to switch the deep core on before you load anything. Keep the spine neutral and braced the whole way, and ease off any move that tugs at the lower back."},
+];
+
+const VIDEO_MAP = {"Cable Crossover (Kneeldown Fly)": "https://youtube.com/shorts/HYG5oimcJYA?si=OQ6XWeIl2f_OYUSt", "Warm-up": [["Shoulder rotations", "https://youtube.com/shorts/LgPCO6RIH3Q?si=szsnZRWpFmL-Qn1E"], ["Cat-camel", "https://youtube.com/shorts/R3yWM5egzhU?si=U1zjClVdDm9dbY_i"], ["Leg swings", "https://youtube.com/shorts/3l31E2cMGMk?si=j6IzaAeLqsNOsOFM"]], "Warm-up · Skill Mill": [["Shoulder rotations", "https://youtube.com/shorts/LgPCO6RIH3Q?si=szsnZRWpFmL-Qn1E"], ["Cat-camel", "https://youtube.com/shorts/R3yWM5egzhU?si=U1zjClVdDm9dbY_i"], ["Leg swings", "https://youtube.com/shorts/3l31E2cMGMk?si=j6IzaAeLqsNOsOFM"]], "Machine Chest Press": "https://youtube.com/shorts/hkU6fSHcslw?si=5atAG9SDM8yzwbtU", "Incline DB Press": "https://youtube.com/shorts/8fXfwG4ftaQ?si=2zuCmJLk2dXa40NH", "Tricep Pushdown": "https://youtube.com/shorts/oA3yF4lMuKw?si=7dqdehG5WVpcU-XY", "Overhead Cable Ext.": "https://youtube.com/shorts/NTk0Igxqcsk?si=sAQLi231OyCrAqNQ", "Lat Pulldown": "https://youtube.com/shorts/7jBmlCq5QzQ?si=nu-sstYlYt5KDTUW", "Chest-Supported Row": "https://youtube.com/shorts/oNsqMW1gPiU?si=38ojG5BvECicTU0Y", "Close-Grip Pulldown": "https://youtube.com/shorts/lYCgyaGpoDk?si=X3KWcsAlhuAA09T4", "Hammer Curl": "https://youtube.com/shorts/8H5oWMNWWeQ?si=4IDv7J5AU9PSDYpk", "Dumbbell Curl": "https://youtube.com/shorts/MKWBV29S6c0?si=XfUwIfHWVp2ZBJsZ", "Leg Extension": "https://youtube.com/shorts/uM86QE59Tgc?si=mXpoQq4lYB_6ka_j", "Leg Curl": "https://youtube.com/shorts/_lgE0gPvbik?si=qx9fyEthlrsKmLSo", "Calf Raises": "https://youtube.com/shorts/S2yhz3klwdU?si=kCv6n1ppHyQj0Y5d", "Machine Shoulder Press": "https://youtube.com/shorts/k6tzKisR3NY?si=VQRytY9yU6wwsaa4", "Lateral Raises": "https://youtube.com/shorts/Kl3LEzQ5Zqs?si=ONvn6Wr5_16e1X76", "Reverse Pec Dec": "https://youtube.com/shorts/7tgx6QHB0-A?si=rOUSjf5P7mUgCO7C", "Front Raises": "https://youtube.com/shorts/9ThlTL25DH8?si=4Fff3zPqOXaCw2ph", "Core Activation (7-min video)": "https://youtu.be/_TdWdFQ1Cms?si=WJ1jfAwoECEEqI60", "Half Squat (Barbell)": "https://youtube.com/shorts/i3g2xyrkDBw?si=cqM8uU4ozLb2nEYq", "Overhead Slam": "https://youtube.com/shorts/dKpH_n08yqU?si=dQ-Ijq_ETcbvi_MU", "Plank": "https://youtube.com/shorts/xe2MXatLTUw?si=PQVeU7Ib7e4uqwyx", "Bird Dog": "https://youtube.com/shorts/knsOPG88idk?si=V6V5R4sHnW3f4uJ6", "Dead Bug": "https://youtube.com/shorts/DqLL45uk2Tk?si=m0Bfryxi5b3NokXR", "Pallof Press": "https://youtube.com/shorts/99evyH71IWs?si=i3389AcdMWHYE9Qj"};
+
+const SESSIONS = {
+  wed: {
+    title:"Chest + Triceps", time:"9:00–10:30 AM", titlePM:"Walk/Jog + Stretch", timePM:"5:00–6:00 PM",
+    am:[
+      {n:"Warm-up", r:"10 min", t:"cardio", c:"Shoulder rotations · cat-camel · leg swings",
+       d:"Loosen the shoulders and spine: arm circles, slow cat-camel on all fours, and gentle leg swings. Gets blood moving and primes the back before load."},
+      {n:"Skill Mill Intervals", r:"20 min", t:"cardio", c:"Stay upright, don't lean forward",
+       d:"Self-powered curved treadmill. Alternate 1 min hard / 1 min easy for up to 20 min. Keep your torso tall — leaning into it rounds the lower back."},
+      ...COREACT,
+      ...MEDBALL,
+      {n:"Machine Chest Press", r:"3 × 15", t:"safe",
+       d:"Seated chest press machine. Push the handles forward to chest height and control them back. Back stays supported against the pad."},
+      {n:"Cable Crossover (Kneeldown Fly)", r:"3 × 15", t:"modify", c:"Kneel tall, hips stacked — brace the core, don't arch or lean back",
+       d:"Kneeling between two cables (one or both knees down) with the handles set high, bring them together in a wide hugging arc in front of your chest, squeezing, then open slowly for the stretch. Kneeling takes your legs and momentum out of it, so the chest does the work — keep your hips tall and stacked over your knees, brace your core, and keep the spine neutral; don't arch or lean back as you pull through. Lighter weight than a seated machine since you're stabilising yourself."},
+      {n:"Incline DB Press", r:"3 × 15", t:"safe", c:"30° max bench — no arching",
+       d:"Bench set to about 30°. Press the dumbbells up from chest level and lower under control. Keep your back flat on the bench — no arching to push more weight."},
+      {n:"Tricep Pushdown", r:"3 × 15", t:"safe",
+       d:"Standing at the cable, push the bar or rope down by straightening your elbows. Keep upper arms pinned to your sides — only the forearms move."},
+      {n:"Overhead Cable Ext.", r:"3 × 15", t:"safe", c:"Stay seated",
+       d:"Seated with the cable behind you, extend both arms overhead to straighten the elbows. Hits the long head of the triceps. Sitting keeps the lower back neutral."},
+    ],
+    pm:[
+      {n:"Warm-up", r:"10 min", t:"cardio"},
+      {n:"Light Walk / Jog", r:"30 min", t:"cardio", c:"Easy effort"},
+      {n:"Full Stretch", r:"20 min", t:"core", c:"Extension bias — cobra, standing back ext."},
+    ],
+  },
+  thu: {
+    title:"Spinning + Shoulders", time:"7:00–8:30 AM", titlePM:"Skill Mill + Core", timePM:"5:00–6:00 PM",
+    am:[
+      {n:"Spinning Class", r:"60 min · FIXED", t:"cardio", c:"Keep back neutral, don't round shoulders forward",
+       d:"Indoor cycling class. Set the saddle so you're not hunched; keep a neutral back and avoid collapsing the shoulders forward on the bars."},
+      {n:"Transition / Water", r:"10 min", t:"cardio",
+       d:"Towel off, rehydrate (~500 ml), reset before the shoulder work."},
+      {n:"Machine Shoulder Press", r:"3 × 15", t:"modify", c:"Back flat against the pad",
+       d:"Seated press machine. Press the handles overhead and lower under control. Keep your back flat on the pad — don't arch to drive the weight up."},
+      {n:"Lateral Raises", r:"3 × 15", t:"safe",
+       d:"Standing or seated, raise dumbbells out to the sides to shoulder height with a slight bend in the elbows. Hits the side delts — lead with the elbows, not the hands."},
+      {n:"Reverse Pec Dec", r:"3 × 15", t:"safe",
+       d:"Face into the pec-dec machine and open the arms outward to the rear. Targets the rear delts and upper back — great for posture."},
+      {n:"Front Raises", r:"3 × 15", t:"safe",
+       d:"Raise the dumbbells straight out in front to shoulder height, controlled, then lower. Front delts. Don't swing or lean back."},
+    ],
+    pm:[
+      {n:"Warm-up", r:"10 min", t:"cardio"},
+      {n:"Skill Mill Easy", r:"20 min", t:"cardio", c:"Upright posture"},
+      ...CORE,
+    ],
+  },
+  fri: {
+    title:"Back + Biceps", time:"8:00–9:30 AM", titlePM:"Cardio + Stretch", timePM:"5:00–6:00 PM",
+    am:[
+      {n:"Warm-up", r:"10 min", t:"cardio", c:"Shoulder rotations · leg swings",
+       d:"Mobilise shoulders and hips before pulling: arm circles, band pull-aparts if available, easy leg swings."},
+      ...COREACT,
+      {n:"Lat Pulldown", r:"3 × 15", t:"modify", c:"Keep back straight",
+       d:"Seated at the pulldown, pull the bar down to your upper chest, squeezing the shoulder blades down. Lean back only slightly and keep the spine tall — don't heave with the lower back."},
+      {n:"Chest-Supported Row", r:"3 × 15", t:"safe", c:"Chest stays on the pad — let it take the load off your lower back",
+       d:"Your seated-row swap: lie chest-down on an incline bench (set ~30–45°) with dumbbells or handles hanging, and row them up toward your ribs, squeezing the shoulder blades together. Because your chest is supported, your lower back does zero stabilising work — which makes this one of the safest back exercises for L4/L5. Also called a Seal Row or Incline Bench Row."},
+      {n:"Close-Grip Pulldown", r:"3 × 15", t:"modify", c:"Keep back straight",
+       d:"Same as the lat pulldown but with a narrow or neutral (close) grip. Pulls more from the lower lats and brings the biceps in. Stay upright, controlled."},
+      {n:"Hammer Curl", r:"3 × 15", t:"safe",
+       d:"Dumbbell curl with palms facing each other (neutral grip) the whole way. Works the biceps plus the brachialis and forearm. No swinging — let the arms do it."},
+      {n:"Dumbbell Curl", r:"3 × 15", t:"safe",
+       d:"Standard biceps curl, palms up, curling the dumbbells to the shoulders and lowering slowly. Keep the elbows tucked and the torso still."},
+      ...MEDBALL,
+      {n:"Cool-down", r:"10 min", t:"cardio",
+       d:"Easy movement and back/biceps stretches to finish — bring the heart rate down."},
+    ],
+    pm:[
+      {n:"Warm-up", r:"10 min", t:"cardio"},
+      {n:"Air Bike", r:"10 min", t:"cardio", c:"Sit tall, back supported — don't hunch over the bars",
+       d:"Fan/air bike (the JERAI one). The moving handlebars work your arms as you pedal — full body. Steady, easy effort; let the seat support your back and keep your chest up."},
+      {n:"Skill Mill (Curved)", r:"10 min", t:"cardio", c:"Stay upright — don't lean forward",
+       d:"The DRAX curved, self-powered treadmill. You set the pace by where you step — no motor. Keep the torso tall and drive with your stride; leaning into it rounds the lower back."},
+      {n:"Elliptical", r:"10 min", t:"cardio", c:"Stand tall, low impact — easy effort",
+       d:"Cross-trainer. Feet glide, arms push and pull, zero impact on the spine — ideal L4/L5 cardio. Stand upright, don't collapse forward into the handles."},
+      {n:"Calf Raises", r:"3 × 15", t:"safe", c:"The leg 'cheat' on an upper-body day — breaks the monotony",
+       d:"Your one leg move dropped into the upper-body day. Rise onto the balls of your feet, squeeze at the top, lower with control — standing or seated machine both fine. Spine stays neutral; nothing here loads the back."},
+      {n:"Back / Biceps Stretch", r:"20 min", t:"core"},
+    ],
+  },
+  sat: {
+    title:"Legs · MODIFIED", time:"8:30–10:00 AM", titlePM:"Recovery + Add/Abd", timePM:"5:00–6:00 PM",
+    am:[
+      {n:"Warm-up · Skill Mill", r:"incl. 5 min @ 5 kg", t:"modify", c:"Upright, weight held close — don't lean forward · do 1 min cat-camel first",
+       d:"Skill-mill warm-up, with a 5-minute segment carrying a 5 kg weight. Hold the load close to your body, spine neutral and shoulders back — let the legs drive it, don't let the weight tip you into a forward or side lean. Keep it light enough that posture never breaks. One thing to keep: a quick minute of cat-camel and leg swings before you step on, since that spine prep matters most on leg day for your back."},
+      ...COREACT,
+      {n:"Leg Extension", r:"3 × 15", t:"caution", c:"LIGHT weight only",
+       d:"Seated machine, straighten the knees to lift the pad, lower slowly. Isolates the quads. Keep it LIGHT — heavy loads here can tug on the pelvis and stress L4/L5."},
+      {n:"Leg Curl", r:"3 × 15", t:"safe",
+       d:"Lying or seated machine, curl the pad toward you by bending the knees. Works the hamstrings. Controlled both ways."},
+      {n:"Half Squat (Barbell)", r:"3 × 12", t:"modify", c:"Half-depth ONLY — brace core, stop before the lower back rounds",
+       d:"Your plan-approved swap for deep squats. Going deep is where the 'butt wink' rounds the spine and compresses L4/L5 — so keep it to quarter-to-half depth. Brace your core before each rep, keep the bar over mid-foot, spine neutral, and stop the descent the instant your lower back wants to round. Moderate, controlled load — light enough to own every rep. The goblet squat in the clip (one weight held at your chest) is a gentler, more upright option than the barbell — try it if the bar ever pulls you forward."},
+      {n:"Cool-down", r:"10 min", t:"cardio",
+       d:"Easy walk and light stretching to bring everything down."},
+      {n:"Mat Work · Ankle Weights", r:"optional · 20 min · 2.5 kg", t:"modify", c:"Only if energy's there — spine neutral, feel it in the GLUTES not the back",
+       d:"Optional finisher — only when you've got it in you; skip it with a clear conscience if you're spent. Floor-mat glute & hip work with 2.5 kg ankle weights: clamshells, side-lying leg lifts, glute bridges, and controlled hip rotations. Watch-point for L4/L5: a straight, weighted leg is a long lever that pulls on the pelvis and can load the disc — keep the knee softly bent during rotations, brace the core, and use a smaller range. If you feel it in the lower back rather than the glutes, shorten the lever or drop the weight."},
+    ],
+    pm:[
+      {n:"Warm-up", r:"10 min", t:"cardio"},
+      {n:"Adductors", r:"optional · 3 × 15 · LIGHT", t:"caution", c:"Evening repository — only when recovery allows · LIGHT & controlled",
+       d:"Your evening 'when you're ready' slot, moved out of the morning so leg day isn't overloaded. Seated adductor machine — squeeze the knees together against the pads, light and smooth, no jerking. Add it only once recovery feels solid and you've energy to spare. No pressure — it's here for the day it fits, not as a must-do."},
+      {n:"Abductors", r:"optional · 3 × 15 · LIGHT", t:"caution", c:"Evening repository — only when recovery allows · LIGHT & controlled",
+       d:"Paired with the adductors as the optional evening slot. Seated abductor machine — push the knees apart against the pads, light and controlled. Skip freely if you're spent; it'll keep."},
+      {n:"Very Light Walk", r:"20 min", t:"cardio"},
+      {n:"Foam Roll + Stretch", r:"30 min", t:"core", c:"Extension bias"},
+    ],
+  },
+};
+
+const DAYKEYS = ["wed","thu","fri","sat"];
+const DAYFULL = {wed:"Wednesday",thu:"Thursday",fri:"Friday",sat:"Saturday"};
+const DAYSHORT = {wed:"W",thu:"Th",fri:"F",sat:"Sa"};
+const TYPELABEL = {safe:"Safe",modify:"Modify",caution:"Caution",cardio:"Cardio",core:"Core",medball:"Med Ball"};
+function badgeClass(t){return t==="safe"?"b-safe":t==="modify"?"b-modify":t==="caution"?"b-caution":"b-cardio";}
+function tagClass(t){return t==="safe"?"t-safe":t==="modify"?"t-modify":t==="caution"?"t-caution":"t-cardio";}
+
+/* ---------- state ---------- */
+let day, sess, state = {done:{}, weights:{}};
+let expanded = {};
+let lastWeights = {};
+let memFallback = {};
+
+function todayKey(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function stateKey(){ return "ds4:state:"+todayKey()+":"+day+":"+sess; }
+function exId(i){ return day+"-"+sess+"-"+i; }
+
+function hasWS(){ return typeof window!=="undefined" && window.storage && typeof window.storage.get==="function"; }
+async function sGet(k){
+  if(hasWS()){
+    try{ const r=await window.storage.get(k,false); return r?r.value:null; }catch(e){}
+  }
+  try{ const v=localStorage.getItem(k); if(v!==null) return v; }catch(e){}
+  return (k in memFallback)?memFallback[k]:null;
+}
+async function sSet(k,v){
+  memFallback[k]=v;
+  if(hasWS()){
+    try{ await window.storage.set(k,v,false); return; }catch(e){}
+  }
+  try{ localStorage.setItem(k,v); }catch(e){}
+}
+
+async function loadState(){
+  const raw = await sGet(stateKey());
+  state = raw ? JSON.parse(raw) : {done:{}, weights:{}};
+  const lw = await sGet("ds4:lastweights");
+  lastWeights = lw ? JSON.parse(lw) : {};
+}
+async function saveState(){ await sSet(stateKey(), JSON.stringify(state)); }
+async function saveLastWeights(){ await sSet("ds4:lastweights", JSON.stringify(lastWeights)); }
+
+/* ---------- render ---------- */
+const $=id=>document.getElementById(id);
+
+function curList(){ return SESSIONS[day][sess]; }
+
+function render(){
+  const S = SESSIONS[day];
+  $("dayName").textContent = DAYFULL[day];
+  $("sessionTitle").textContent = (sess==="am"?S.title:S.titlePM) + " · " + (sess==="am"?S.time:S.timePM);
+  $("amBtn").classList.toggle("on", sess==="am");
+  $("pmBtn").classList.toggle("on", sess==="pm");
+
+  $("dayChips").innerHTML = DAYKEYS.map(d=>`
+    <div class="day ${d===day?'on':''}" data-day="${d}">
+      <div class="dn">${DAYSHORT[d]}</div>
+      <div class="df">${(sess==="am"?SESSIONS[d].title:SESSIONS[d].titlePM).split(/[ ·]/)[0]}</div>
+    </div>`).join("");
+  document.querySelectorAll(".day").forEach(el=>el.onclick=()=>switchDay(el.dataset.day));
+
+  const items = curList();
+  const total = items.length;
+  let doneCount = 0;
+  items.forEach((_,i)=>{ if(state.done[exId(i)]) doneCount++; });
+
+  $("barFill").style.width = (total?Math.round(doneCount/total*100):0)+"%";
+  $("pctTxt").textContent = doneCount+"/"+total;
+
+  let nextIdx = items.findIndex((_,i)=>!state.done[exId(i)]);
+  const hero = $("hero");
+  if(nextIdx === -1){
+    hero.innerHTML = `<div class="hero complete">
+        <div class="big">Session done ✓</div>
+        <p>${doneCount} moves logged. Protein within 30 min · 500 ml water · stretch it out.</p>
+      </div>`;
+  } else {
+    const it = items[nextIdx];
+    const isLift = (it.t==="safe"||it.t==="modify"||it.t==="caution") && /×/.test(it.r);
+    const id = exId(nextIdx);
+    const wv = state.weights[id] ?? "";
+    const ph = lastWeights[it.n] ? "last: "+lastWeights[it.n] : "kg / notes";
+    hero.innerHTML = `<div class="hero">
+        <div class="lbl">Up Next</div>
+        <div class="name">${it.n}</div>
+        <div class="meta">
+          <span class="reps">${it.r}</span>
+          <span class="badge ${badgeClass(it.t)}">${TYPELABEL[it.t]}</span>
+        </div>
+        ${it.c?`<div class="cue">${warnIcon(it.t)}<span>${it.c}</span></div>`:""}
+        ${it.d?`<div class="howto">${it.d}</div>`:""}
+        ${videoHtml(it.n)}
+        ${isLift?`<div class="wt"><label>Wt</label><input id="wtInput" inputmode="text" placeholder="${ph}" value="${wv}"></div>`:""}
+        <button class="done-btn" id="doneBtn">Done · Next →</button>
+      </div>`;
+    $("doneBtn").onclick = ()=>markDone(nextIdx);
+    const wi = $("wtInput");
+    if(wi) wi.oninput = ()=>{
+      state.weights[id] = wi.value;
+      if(wi.value.trim()) lastWeights[it.n] = wi.value.trim();
+      saveState(); saveLastWeights();
+    };
+  }
+
+  $("list").innerHTML = items.map((it,i)=>{
+    const id = exId(i);
+    const done = !!state.done[id];
+    const isNext = i===nextIdx;
+    const open = !!expanded[id];
+    return `<div class="rowwrap">
+        <div class="row ${done?'done':''} ${isNext?'next':''} ${open?'open':''}" data-i="${i}" style="animation-delay:${i*30}ms">
+          <div class="check" data-check="${i}">${checkIcon()}</div>
+          <div class="rbody" data-body="${i}">
+            <div class="rn">${it.n}</div>
+            <div class="rmeta"><span class="tag ${tagClass(it.t)}"></span><span class="rreps">${it.r}</span>${it.c?`<span class="rcue">· ${it.c}</span>`:""}</div>
+          </div>
+          ${it.d?`<div class="info" data-body="${i}">${open?'▴':'▾'}</div>`:""}
+        </div>
+        ${(it.d&&open)?`<div class="rdetail">${it.d}${videoHtml(it.n)}</div>`:""}
+      </div>`;
+  }).join("");
+  document.querySelectorAll("[data-check]").forEach(el=>el.onclick=(e)=>{e.stopPropagation();toggle(+el.dataset.check);});
+  document.querySelectorAll("[data-body]").forEach(el=>el.onclick=(e)=>{e.stopPropagation();toggleInfo(+el.dataset.body);});
+  if(nextIdx===-1) updateTimerCtx("", null);
+  else updateTimerCtx(items[nextIdx].n, parseDuration(items[nextIdx].r));
+}
+
+let tRemain=60,tBase=60,tRunning=false,tInt=null,audioCtx=null,curSecs=null;
+function parseDuration(r){
+  if(!r) return null;
+  let m=r.match(/(\d+)\s*sec/i); if(m) return parseInt(m[1]);
+  m=r.match(/(\d+)\s*min/i); if(m) return parseInt(m[1])*60;
+  return null;
+}
+function fmtT(s){const m=Math.floor(s/60),x=s%60;return m+":"+String(x).padStart(2,"0");}
+function renderTimer(){const d=$("tDisplay");if(d)d.textContent=fmtT(tRemain);const t=$("tToggle");if(t)t.textContent=tRunning?"Pause":"Start";}
+function setTimer(sec){tBase=sec;tRemain=sec;tRunning=false;clearInterval(tInt);const d=$("tDisplay");if(d)d.classList.remove("done");renderTimer();}
+function ensureAudio(){try{if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume();}catch(e){}}
+function beep(){try{if(!audioCtx)return;[0,0.18,0.36].forEach(t=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type="sine";o.frequency.value=880;o.connect(g);g.connect(audioCtx.destination);const s=audioCtx.currentTime+t;g.gain.setValueAtTime(0.001,s);g.gain.exponentialRampToValueAtTime(0.3,s+0.02);g.gain.exponentialRampToValueAtTime(0.001,s+0.16);o.start(s);o.stop(s+0.17);});}catch(e){}}
+function timerDone(){const d=$("tDisplay");if(d)d.classList.add("done");try{if(navigator.vibrate)navigator.vibrate([180,90,180]);}catch(e){}beep();setTimeout(()=>{tRemain=tBase;const dd=$("tDisplay");if(dd)dd.classList.remove("done");renderTimer();},2600);}
+function toggleTimer(){
+  if(tRunning){tRunning=false;clearInterval(tInt);renderTimer();return;}
+  if(tRemain<=0)tRemain=tBase;
+  ensureAudio();tRunning=true;renderTimer();
+  tInt=setInterval(()=>{tRemain--;if(tRemain<=0){tRemain=0;clearInterval(tInt);tRunning=false;renderTimer();timerDone();}else renderTimer();},1000);
+}
+function timerReset(){tRemain=tBase;tRunning=false;clearInterval(tInt);const d=$("tDisplay");if(d)d.classList.remove("done");renderTimer();}
+function updateTimerCtx(name,secs){
+  curSecs=secs;
+  const w=$("tWhat");if(w)w.textContent=name||"–";
+  const chip=$("tCtx");if(!chip)return;
+  if(secs){chip.style.display="inline-block";chip.textContent="⏱ "+fmtT(secs);}
+  else chip.style.display="none";
+}
+function videoHtml(name){
+  const v = VIDEO_MAP[name];
+  if(!v) return "";
+  const short = u => u.split("?")[0].replace(/^https?:\/\//,"");
+  if(Array.isArray(v)){
+    const rows = v.map(function(p){return `<div class="vrow"><a class="vmini" href="${p[1]}" target="_blank" rel="noopener">▶ ${p[0]}</a> <span class="vurl">${short(p[1])}</span></div>`;}).join("");
+    return `<div class="vidblock"><div class="vlbl">Form demos</div>${rows}</div>`;
+  }
+  return `<div class="vidblock"><a class="vlink" href="${v}" target="_blank" rel="noopener">▶ Watch the technique</a><br><span class="vurl">If the button won't open, long-press to copy: ${short(v)}</span></div>`;
+}
+function checkIcon(){return `<svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5L5.5 11L12 3" stroke="#10140a" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+function warnIcon(t){const col=t==="caution"?"#ff5b50":t==="modify"?"#46c2ff":"#37d68a";return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="${col}" stroke-width="2"/><path d="M12 7v6M12 16.5v.5" stroke="${col}" stroke-width="2" stroke-linecap="round"/></svg>`;}
+
+async function markDone(i){ state.done[exId(i)]=true; await saveState(); render(); }
+async function toggle(i){ const id=exId(i); state.done[id]=!state.done[id]; await saveState(); render(); }
+function toggleInfo(i){ const id=exId(i); expanded[id]=!expanded[id]; render(); }
+
+async function switchDay(d){ day=d; await loadState(); render(); }
+async function switchSess(s){ sess=s; await loadState(); render(); }
+
+/* reset (two-tap confirm) */
+let resetArmed=false, resetTimer=null;
+function wireReset(){
+  $("resetBtn").onclick=async()=>{
+    if(!resetArmed){
+      resetArmed=true; $("resetBtn").classList.add("armed"); $("resetBtn").textContent="Sure?";
+      resetTimer=setTimeout(()=>{resetArmed=false;$("resetBtn").classList.remove("armed");$("resetBtn").textContent="Reset";},2500);
+      return;
+    }
+    clearTimeout(resetTimer); resetArmed=false;
+    $("resetBtn").classList.remove("armed"); $("resetBtn").textContent="Reset";
+    state={done:{},weights:{}}; await saveState(); render();
+  };
+}
+
+/* safety expand */
+$("stopBar").onclick=()=>{
+  const d=$("stopDetail"); const on=d.classList.toggle("show");
+  $("stopMore").textContent = on ? "red flags ▴" : "red flags ▾";
+};
+
+/* ---------- init ---------- */
+(async function init(){
+  const jsDay=new Date().getDay();
+  const map={3:"wed",4:"thu",5:"fri",6:"sat"};
+  day = map[jsDay] || "wed";
+  sess = new Date().getHours() < 14 ? "am" : "pm";
+  $("amBtn").onclick=()=>switchSess("am");
+  $("pmBtn").onclick=()=>switchSess("pm");
+  wireReset();
+  document.querySelectorAll(".tchip[data-sec]").forEach(b=>b.onclick=()=>setTimer(+b.dataset.sec));
+  $("tCtx").onclick=()=>{ if(curSecs) setTimer(curSecs); };
+  $("tToggle").onclick=toggleTimer;
+  $("tReset").onclick=timerReset;
+  setTimer(60);
+  await loadState();
+  render();
+})();
+
+/* ---------- Service Worker ---------- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.error('SW registration failed:', err));
+  });
+}
+</script>
+</body>
+</html>
