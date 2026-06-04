@@ -1,9 +1,9 @@
 {
   "name": "Gym Companion L4/L5",
   "short_name": "GymComp",
-  "description": "L4/L5 safe gym workout companion",
-  "start_url": "/gym-companion/",
-  "scope": "/gym-companion/",
+  "description": "L4/L5 safe gym workout companion — Wed/Thu/Fri/Sat sessions",
+  "start_url": "https://ambijat.github.io/gym-companion/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#c4ff1f",
