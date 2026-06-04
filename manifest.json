@@ -1,16 +1,13 @@
 {
-  "id": "ambijat.github.io/gym-companion",
-  "name": "DS4 Gym Companion",
+  "name": "Gym Companion L4/L5",
   "short_name": "GymComp",
   "description": "L4/L5 safe gym workout companion — Wed/Thu/Fri/Sat sessions",
-  "categories": ["health", "fitness", "sports"],
-  "start_url": "/gym-companion/",
-  "scope": "/gym-companion/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#0c0e0d",
+  "theme_color": "#c4ff1f",
   "background_color": "#0c0e0d",
-  "lang": "en",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -35,32 +32,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Wednesday — Chest & Triceps",
-      "short_name": "Wed",
-      "url": "/?day=wed",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Thursday — Spinning & Shoulders",
-      "short_name": "Thu",
-      "url": "/?day=thu",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Friday — Back & Biceps",
-      "short_name": "Fri",
-      "url": "/?day=fri",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Saturday — Legs",
-      "short_name": "Sat",
-      "url": "/?day=sat",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
