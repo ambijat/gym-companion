@@ -47,22 +47,5 @@
       "url": "/?day=sat",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshots/screen-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Gym Companion session view"
-    },
-    {
-      "src": "screenshots/screen-mobile.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Gym Companion on mobile"
-    }
-  ],
-  "protocol_handlers": []
+  ]
 }
