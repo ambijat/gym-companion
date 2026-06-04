@@ -1,7 +1,9 @@
 {
+  "id": "ambijat.github.io/gym-companion",
   "name": "DS4 Gym Companion",
   "short_name": "GymComp",
   "description": "L4/L5 safe gym workout companion — Wed/Thu/Fri/Sat sessions",
+  "categories": ["health", "fitness", "sports"],
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
