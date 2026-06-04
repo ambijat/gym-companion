@@ -1,37 +1,26 @@
 {
-  "name": "Gym Companion L4/L5",
+  "name": "Gym Companion",
   "short_name": "GymComp",
-  "description": "L4/L5 safe gym workout companion — Wed/Thu/Fri/Sat sessions",
+  "description": "L4/L5 safe gym workout tracker",
   "start_url": "https://ambijat.github.io/gym-companion/",
-  "scope": "/",
+  "scope": "https://ambijat.github.io/gym-companion/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#c4ff1f",
   "background_color": "#0c0e0d",
+  "lang": "en",
   "icons": [
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-192-maskable.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icons/icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
