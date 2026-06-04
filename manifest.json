@@ -2,8 +2,8 @@
   "name": "Gym Companion",
   "short_name": "GymComp",
   "description": "L4/L5 safe gym workout tracker",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "https://ambijat.github.io/gym-companion/index.html",
+  "scope": "https://ambijat.github.io/gym-companion/",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#c4ff1f",
@@ -22,5 +22,6 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "id": "gc"
 }
