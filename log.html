@@ -129,6 +129,7 @@ const GROUPS=[
   {name:"Cardio",hex:"#2fe6c8",ex:["Skill Mill","Air Bike","Elliptical","Spinning","Walk / Jog","Swim"]},
 ];
 function groupHex(g){const x=GROUPS.find(z=>z.name===g);return x?x.hex:"#888";}
+function noteHex(g){return g==="Note"?"#c4ff1f":groupHex(g);}
 
 let curGroup=0, log=[], memFallback={};
 
@@ -179,6 +180,26 @@ async function doLog(ex,group){
 async function undoLast(){ if(lastTs){await del(lastTs);lastTs=null;$("toast").classList.remove("show");} }
 async function del(ts){ log=log.filter(e=>e.ts!==ts); await saveLog(); renderHistory(); }
 
+async function handleIncomingLaunch(){
+  const params = new URLSearchParams(window.location.search);
+  const title = (params.get("shared_title") || "").trim();
+  const text = (params.get("shared_text") || "").trim();
+  const url = (params.get("shared_url") || "").trim();
+  const protocol = (params.get("protocol") || "").trim();
+  const noteMode = params.get("new") === "note";
+  const parts = [title, text, url, protocol].filter(Boolean);
+
+  if(!parts.length){
+    if(noteMode) history.replaceState(null, "", location.pathname);
+    return false;
+  }
+
+  const note = parts.join(" · ").replace(/\s+/g, " ").slice(0, 180);
+  await doLog("Shared note: "+note, "Note");
+  history.replaceState(null, "", location.pathname);
+  return true;
+}
+
 function renderHistory(){
   $("stat").textContent = log.length ? (log.length+" logs · "+new Set(log.map(e=>e.ts.slice(0,10))).size+" days") : "";
   if(!log.length){$("history").innerHTML='<div class="empty">No entries yet. Pick a group above and tap what you did.</div>';return;}
@@ -193,7 +214,7 @@ function renderHistory(){
     h+=`<div class="day"><div class="dayhd">${lbl}<span class="dc">${items.length} logged</span></div>`;
     items.forEach(e=>{
       const tm=new Date(e.ts).toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
-      h+=`<div class="ent"><span class="dot" style="background:${groupHex(e.group)}"></span><span class="et">${tm}</span><span class="en">${e.ex}</span><span class="del" data-ts="${e.ts}">✕</span></div>`;
+      h+=`<div class="ent"><span class="dot" style="background:${noteHex(e.group)}"></span><span class="et">${tm}</span><span class="en">${e.ex}</span><span class="del" data-ts="${e.ts}">✕</span></div>`;
     });
     h+=`</div>`;
   });
@@ -225,6 +246,7 @@ function tick(){
   $("closeBtn").onclick=()=>$("modal").classList.remove("show");
   $("fmtCsv").onclick=()=>{expFmt="csv";$("fmtCsv").classList.add("on");$("fmtJson").classList.remove("on");$("expText").value=buildExport();};
   $("fmtJson").onclick=()=>{expFmt="json";$("fmtJson").classList.add("on");$("fmtCsv").classList.remove("on");$("expText").value=buildExport();};
-  await loadLog(); renderHistory();
+  await loadLog();
+  if(!await handleIncomingLaunch()) renderHistory();
 })();
 </script>

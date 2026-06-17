@@ -10,6 +10,9 @@
     "standalone",
     "minimal-ui"
   ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "orientation": "portrait",
   "theme_color": "#0c0e0d",
   "background_color": "#0c0e0d",
@@ -21,6 +24,9 @@
     "productivity"
   ],
   "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 420
+  },
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -77,5 +83,23 @@
         }
       ]
     }
-  ]
+  ],
+  "share_target": {
+    "action": "./log.html",
+    "method": "GET",
+    "params": {
+      "title": "shared_title",
+      "text": "shared_text",
+      "url": "shared_url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+gymcompanion",
+      "url": "./log.html?protocol=%s"
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "./log.html?new=note"
+  }
 }
