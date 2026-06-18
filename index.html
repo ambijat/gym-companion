@@ -209,6 +209,7 @@
       <button id="amBtn" class="on">AM</button>
       <button id="pmBtn">PM</button>
     </div>
+    <button id="btn-install" style="display:none;margin-left:8px">Install App</button>
   </div>
 
   <div class="days" id="dayChips"></div>
@@ -622,6 +623,40 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.error('SW registration failed:', err));
   });
 }
+
+/* ---------- Install prompt (Option 3: beforeinstallprompt) ---------- */
+let deferredPrompt = null;
+const btnInstall = document.getElementById('btn-install');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); // Prevent the mini-infobar
+  deferredPrompt = e; // Save the event for later
+  if (btnInstall) {
+    btnInstall.style.display = 'inline-block';
+  }
+});
+
+if (btnInstall) {
+  btnInstall.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    btnInstall.disabled = true;
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      console.log('User accepted the install');
+    } else {
+      console.log('User dismissed the install');
+    }
+    deferredPrompt = null;
+    btnInstall.style.display = 'none';
+    btnInstall.disabled = false;
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  console.log('App installed');
+  if (btnInstall) btnInstall.style.display = 'none';
+});
 </script>
 </body>
 </html>

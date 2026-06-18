@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^bash -lc 'BR=\\$\\(git rev-parse --abbrev-ref HEAD 2>/dev/null \\|\\| echo \"unknown\"\\); echo \"On branch: \\$BR\"; git status --porcelain; git add -A; if git commit -m \"feat: add PWA install button and beforeinstallprompt flow\"; then git push origin \"\\$BR\"; else echo \"No changes to commit \\(or commit failed\\)\\.\"; fi'$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
