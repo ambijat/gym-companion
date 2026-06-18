@@ -51,5 +51,56 @@ Notes & Tips
 - If you prefer a GUI, PWABuilder can generate a TWA project as well.
 
 Want me to:
-- Fill `bubblewrap-config.json` with your real domain & package name and commit it?
+- Fill `bubblewrap-config.json` with your real domain & package name and commit it? (Done — see `bubblewrap-config.json`)
 - Create a GitHub Action that runs Bubblewrap and builds an unsigned AAB for internal testing? (You’ll still need to provide signing credentials securely.)
+
+Suggested Play Console fields (ready-to-copy)
+------------------------------------------------
+- App name: Gym Companion
+- Package name: com.ambijat.gymcompanion
+- Default language: English (United Kingdom) — en-GB
+- App or game: App
+- Free or paid: Free
+- Category: Health & Fitness
+- Contact details: email: YOUR_DEVELOPER_EMAIL@example.com, phone optional, website: https://ambijat.github.io/gym-companion/
+- Privacy policy URL: https://ambijat.github.io/gym-companion/privacy.html
+
+Store listing text suggestions
+-----------------------------
+- Short description (max ~80 chars): L4/L5 safe workout companion — guided sessions, timers, logs
+- Full description (detailed): Gym Companion is a lightweight progressive web app tailored for safe L4/L5 back-friendly gym sessions. It provides guided workouts, pacing timers, technique cues, progress logging, and short form demos to keep your training effective and spine-safe. Use it on the go or install from the Play Store for an app-like experience.
+
+Assets you'll need
+-------------------
+- High-res icon: 512x512 PNG (transparent allowed)
+- Feature graphic: 1024x500 JPEG/PNG (required for Play listing)
+- Screenshots: vertical phone screenshots (1080x1920 or similar) — add 3–6 showing the hero, timer, and session list
+- Promo video (optional): YouTube link
+
+Digital Asset Links / Signing note
+--------------------------------
+- `/.well-known/assetlinks.json` has been created in this repo and is published at:
+	`https://ambijat.github.io/gym-companion/.well-known/assetlinks.json`
+- Replace `REPLACE_WITH_YOUR_SHA256_FINGERPRINT` with the SHA256 fingerprint of the signing key that will sign the app users install. If you use Google Play App Signing, use the *app signing* certificate fingerprint (you can fetch it from Play Console after enabling app signing).
+
+Get SHA256 from a keystore (example):
+```bash
+# generate keystore (if needed)
+keytool -genkeypair -v -keystore key.jks -alias gymcomp -keyalg RSA -keysize 2048 -validity 10000
+
+# list fingerprint
+keytool -list -v -keystore key.jks -alias gymcomp | grep SHA256
+```
+
+Hosting and verification
+------------------------
+- Ensure `/.well-known/assetlinks.json` is reachable at `https://ambijat.github.io/gym-companion/.well-known/assetlinks.json` before uploading the AAB.
+- After you upload your first release to Play and enable Play App Signing, verify the *app signing certificate* fingerprint in Play Console and update `assetlinks.json` if necessary.
+
+Next steps I can take for you
+----------------------------
+- Replace the `REPLACE_WITH_YOUR_SHA256_FINGERPRINT` value if you provide the keystore (do **not** share private keys in chat; tell me the fingerprint instead).
+- Scaffold a GitHub Action to run Bubblewrap and build an unsigned AAB for internal testing (it will require storing signing secrets in GitHub Actions secrets).
+- Create a basic `privacy.html` page in the repo and commit it so you have a privacy policy URL to link in Play Console. (I can draft a concise GDPR-friendly privacy policy template.)
+
+Tell me which of the above you'd like me to do next.

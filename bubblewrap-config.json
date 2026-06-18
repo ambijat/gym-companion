@@ -1,7 +1,7 @@
 {
-  "packageId": "com.example.gymcompanion",
+  "packageId": "com.ambijat.gymcompanion",
   "applicationName": "Gym Companion",
-  "host": "YOUR_DOMAIN_OR_HOST",
+  "host": "https://ambijat.github.io/gym-companion",
   "startUrl": "/index.html",
   "display": "standalone",
   "themeColor": "#0c0e0d",
