@@ -1,0 +1,72 @@
+{
+  "packageId": "com.ambijat.gymcompanion",
+  "host": "ambijat.github.io",
+  "name": "Gym Companion",
+  "launcherName": "GymComp",
+  "display": "standalone",
+  "themeColor": "#0C0E0D",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#0C0E0D",
+  "enableNotifications": true,
+  "startUrl": "/gym-companion/index.html",
+  "iconUrl": "https://ambijat.github.io/gym-companion/icons/icon-512.png",
+  "maskableIconUrl": "https://ambijat.github.io/gym-companion/icons/icon-512-maskable.png",
+  "monochromeIconUrl": "https://ambijat.github.io/gym-companion/icons/icon-192.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "android.keystore",
+    "alias": "gymcomp"
+  },
+  "appVersionName": "1",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Workout Log",
+      "shortName": "Log",
+      "url": "https://ambijat.github.io/gym-companion/log.html",
+      "chosenIconUrl": "https://ambijat.github.io/gym-companion/icons/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://ambijat.github.io/gym-companion/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://ambijat.github.io/gym-companion/",
+  "minSdkVersion": 21,
+  "shareTarget": {
+    "action": "https://ambijat.github.io/gym-companion/log.html",
+    "method": "GET",
+    "params": {
+      "title": "shared_title",
+      "text": "shared_text",
+      "url": "shared_url"
+    }
+  },
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [
+    {
+      "protocol": "web+gymcompanion",
+      "url": "https://ambijat.github.io/gym-companion/log.html?protocol=%s"
+    }
+  ],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "navigate-existing",
+  "displayOverride": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "appVersion": "1"
+}
