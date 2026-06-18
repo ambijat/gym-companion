@@ -1,0 +1,15 @@
+{
+  "packageId": "com.example.gymcompanion",
+  "applicationName": "Gym Companion",
+  "host": "YOUR_DOMAIN_OR_HOST",
+  "startUrl": "/index.html",
+  "display": "standalone",
+  "themeColor": "#0c0e0d",
+  "navigationColor": "#0c0e0d",
+  "enableNotifications": false,
+  "icons": {
+    "96": "icons/icon-192.png",
+    "192": "icons/icon-192.png",
+    "512": "icons/icon-512.png"
+  }
+}
