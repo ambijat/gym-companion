@@ -1,1 +1,11 @@
 android.keystore
+local.properties
+
+# Gradle and Android build artifacts
+.gradle/
+build/
+app/build/
+
+# Local IDE and logs
+*.log
+.DS_Store
